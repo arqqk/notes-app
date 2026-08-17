@@ -13,10 +13,10 @@ class Storage {
         }
         if (!localStorage.getItem(this.tableKey)) {
             const defaultTable = {
-                columns: ['Задача', 'Приоритет', 'Срок', 'Статус'],
+                columns: ['', '', ''],
                 rows: [
-                    ['Пример задачи', 'Высокий', '2026-08-20', 'В процессе'],
-                    ['Вторая задача', 'Средний', '2026-08-25', 'Ожидает']
+                    ['', '', ''],
+                    ['', '', '']
                 ]
             };
             localStorage.setItem(this.tableKey, JSON.stringify(defaultTable));
