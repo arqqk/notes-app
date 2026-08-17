@@ -12,6 +12,7 @@ class TableManager {
         this.addRowBtn = document.getElementById('add-row-btn');
         this.addColBtn = document.getElementById('add-col-btn');
         this.exportBtn = document.getElementById('export-table');
+        this.importBtn = document.getElementById('import-table');
     }
 
     initializeEventListeners() {
@@ -25,6 +26,10 @@ class TableManager {
 
         this.exportBtn.addEventListener('click', () => {
             this.exportToCSV();
+        });
+
+        this.importBtn.addEventListener('click', () => {
+            this.importFromCSV();
         });
 
         // Делегирование событий для input в таблице
@@ -211,6 +216,99 @@ class TableManager {
                 }
             });
         }
+    }
+
+    // Импорт из CSV
+    importFromCSV() {
+        // Создаем скрытый input для выбора файла
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.csv,text/csv';
+        fileInput.style.display = 'none';
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = (event) => {
+                try {
+                    const csvText = event.target.result;
+                    const tableData = this.parseCSV(csvText);
+                    
+                    if (tableData && tableData.columns.length > 0) {
+                        // Спрашиваем пользователя
+                        if (confirm(`Импортировать таблицу? (${tableData.rows.length} строк, ${tableData.columns.length} колонок)`)) {
+                            this.tableData = tableData;
+                            storage.saveTable(this.tableData);
+                            this.renderTable();
+                            alert('Таблица успешно импортирована!');
+                        }
+                    } else {
+                        alert('Не удалось распознать данные в файле');
+                    }
+                } catch (error) {
+                    console.error('Ошибка импорта:', error);
+                    alert('Ошибка при импорте файла');
+                }
+            };
+            
+            reader.onerror = () => {
+                alert('Ошибка при чтении файла');
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        document.body.appendChild(fileInput);
+        fileInput.click();
+        document.body.removeChild(fileInput);
+    }
+
+    // Парсинг CSV
+    parseCSV(csvText) {
+        const lines = csvText.split(/\r\n|\n|\r/).filter(line => line.trim());
+        
+        if (lines.length === 0) return null;
+        
+        const parseLine = (line) => {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            return result.map(cell => cell.replace(/^"|"$/g, ''));
+        };
+        
+        const columns = parseLine(lines[0]);
+        const rows = lines.slice(1).map(line => parseLine(line));
+        
+        // Проверяем, что все строки имеют одинаковое количество колонок
+        const validRows = rows.filter(row => row.length === columns.length);
+        
+        return {
+            columns: columns,
+            rows: validRows
+        };
     }
 
     // Экранирование HTML
