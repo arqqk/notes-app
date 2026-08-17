@@ -13,6 +13,7 @@ class TableManager {
         this.addColBtn = document.getElementById('add-col-btn');
         this.exportBtn = document.getElementById('export-table');
         this.importBtn = document.getElementById('import-table');
+        this.pasteBtn = document.getElementById('paste-table');
     }
 
     initializeEventListeners() {
@@ -32,6 +33,10 @@ class TableManager {
             this.importFromCSV();
         });
 
+        this.pasteBtn.addEventListener('click', () => {
+            this.pasteFromClipboard();
+        });
+        
         // Делегирование событий для input в таблице
         this.tableBody.addEventListener('input', (e) => {
             if (e.target.classList.contains('cell-input')) {
