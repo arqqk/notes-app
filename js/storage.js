@@ -2,7 +2,7 @@
 class Storage {
     constructor() {
         this.notesKey = 'app_notes';
-        this.tableKey = 'app_table';
+        this.tableKey = 'app_table_v2';
         this.initStorage();
     }
 
