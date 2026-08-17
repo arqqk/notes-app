@@ -365,21 +365,28 @@ body {
 .table-toolbar {
     display: flex;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
 }
 
 .table-container {
-    overflow-x: auto;
+    overflow: auto;
     background: var(--card-color);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y pinch-zoom;
+}
+
+#view-table {
+    touch-action: pan-x pan-y pinch-zoom;
 }
 
 .editable-table {
     width: 100%;
     border-collapse: collapse;
+    transform-origin: top left;
+    transition: transform 0.1s ease;
 }
 
 .editable-table th,
@@ -411,6 +418,42 @@ body {
     outline: none;
     background: rgba(74, 144, 226, 0.1);
     border-radius: 4px;
+}
+
+/* Масштабирование таблицы */
+.zoom-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.zoom-btn {
+    background: var(--card-color);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.zoom-btn:active {
+    transform: scale(0.9);
+    background: var(--border-color);
+}
+
+.zoom-indicator {
+    font-size: 14px;
+    color: var(--text-secondary);
+    min-width: 50px;
+    text-align: center;
 }
 
 /* Модальное окно */
@@ -461,46 +504,43 @@ body {
     padding: 4px;
 }
 
-.input-field,
-.textarea-field {
+.modal-body input,
+.modal-body textarea,
+.modal-body select {
     width: 100%;
-    background: var(--card-color);
+    min-height: 46px;
+    padding: 12px;
+    box-sizing: border-box;
     border: 2px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px;
+    background: var(--card-color);
     color: var(--text-color);
     font-size: 16px;
-    margin-bottom: 16px;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-appearance: none;
     appearance: none;
+    display: block;
+    margin-bottom: 16px;
 }
 
-.input-field:focus,
-.textarea-field:focus {
+.modal-body input:focus,
+.modal-body textarea:focus,
+.modal-body select:focus {
     outline: none;
     border-color: var(--primary-color);
 }
 
-.textarea-field {
+.modal-body textarea {
     resize: vertical;
     min-height: 100px;
 }
 
-/* Специальные стили для поля даты */
-.date-field {
-    width: 100%;
-    min-height: 46px;
-    display: block;
+.modal-body input[type="date"] {
     -webkit-appearance: none;
     appearance: none;
-    position: relative;
 }
 
-/* Для iOS Safari */
-.date-field::-webkit-date-and-time-value {
+.modal-body input[type="date"]::-webkit-date-and-time-value {
     text-align: left;
 }
 
@@ -517,17 +557,16 @@ body {
     font-weight: 600;
 }
 
-.date-field {
-    margin-bottom: 8px;
-}
-
 .modal-footer {
     display: flex;
     gap: 12px;
 }
 
-.modal-footer .btn-primary {
+.modal-footer .btn-primary,
+.modal-footer .btn-secondary {
     flex: 1;
+    min-height: 46px;
+    box-sizing: border-box;
 }
 
 /* Адаптивность для iPhone 17 Pro */
@@ -570,84 +609,12 @@ body {
         width: 95%;
         padding: 16px;
     }
-}
-
-/* Исправление для iOS - выравнивание всех полей в модальном окне */
-.modal-options .input-field,
-.modal-options .filter-select {
-    width: 100%;
-    min-height: 46px;
-    box-sizing: border-box;
-    margin-bottom: 8px;
-}
-
-/* Единый стиль для всех input в модальном окне */
-.modal-body input,
-.modal-body textarea,
-.modal-body select {
-    width: 100%;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    font-size: 16px;
-}
-
-/* Убираем различие в высоте */
-input[type="date"] {
-    -webkit-appearance: none;
-    appearance: none;
-    min-height: 46px;
-}
-
-/* Единые стили для всех полей в модальном окне */
-.option-group {
-    margin-bottom: 16px;
-}
-
-.option-group .option-label {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.option-group .input-field,
-.option-group .filter-select,
-.modal-body .input-field,
-.modal-body .textarea-field,
-.modal-body select {
-    width: 100%;
-    min-height: 46px;
-    padding: 12px;
-    box-sizing: border-box;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--card-color);
-    color: var(--text-color);
-    font-size: 16px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    -webkit-appearance: none;
-    appearance: none;
-    display: block;
-}
-
-/* Специально для поля даты */
-input[type="date"].date-field {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    min-height: 46px;
-    padding: 12px;
-    box-sizing: border-box;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--card-color);
-    color: var(--text-color);
-    font-size: 16px;
-    display: block;
-    margin: 0;
-}
-
-/* Выравнивание текста даты */
-input[type="date"].date-field::-webkit-date-and-time-value {
-    text-align: left;
+    
+    .modal-body input,
+    .modal-body textarea,
+    .modal-body select {
+        font-size: 16px;
+    }
 }
 
 /* Тёмная тема по умолчанию */
