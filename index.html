@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Мои заметки">
+    <title>Мои заметки</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Шапка приложения -->
+    <header class="app-header">
+        <h1 class="app-title">Мои заметки</h1>
+        <nav class="main-nav">
+            <button class="nav-btn active" data-view="notes">
+                <span class="nav-icon">📝</span>
+                <span>Заметки</span>
+            </button>
+            <button class="nav-btn" data-view="calendar">
+                <span class="nav-icon">📅</span>
+                <span>Календарь</span>
+            </button>
+            <button class="nav-btn" data-view="table">
+                <span class="nav-icon">📊</span>
+                <span>Таблица</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Контейнер для вкладок -->
+    <main class="app-content">
+        <!-- Вкладка Заметки -->
+        <section id="view-notes" class="view active">
+            <div class="notes-toolbar">
+                <button id="add-note-btn" class="btn-primary">+ Новая заметка</button>
+                <div class="filter-container">
+                    <select id="status-filter" class="filter-select">
+                        <option value="all">Все</option>
+                        <option value="todo">⏳ Ожидает</option>
+                        <option value="in-progress">🔄 В процессе</option>
+                        <option value="done">✅ Выполнено</option>
+                    </select>
+                </div>
+            </div>
+            <div id="notes-list" class="notes-list"></div>
+        </section>
+
+        <!-- Вкладка Календарь -->
+        <section id="view-calendar" class="view">
+            <div class="calendar-header">
+                <button id="prev-month" class="btn-secondary">‹</button>
+                <h2 id="calendar-title" class="calendar-title"></h2>
+                <button id="next-month" class="btn-secondary">›</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-weekdays">
+                    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+                </div>
+                <div id="calendar-days" class="calendar-days"></div>
+            </div>
+            <div id="selected-date-notes" class="selected-date-notes"></div>
+        </section>
+
+        <!-- Вкладка Таблица -->
+        <section id="view-table" class="view">
+            <div class="table-toolbar">
+                <button id="add-row-btn" class="btn-primary">+ Строка</button>
+                <button id="add-col-btn" class="btn-primary">+ Колонка</button>
+                <button id="export-table" class="btn-secondary">📤 Экспорт CSV</button>
+            </div>
+            <div class="table-container">
+                <table id="editable-table" class="editable-table">
+                    <thead id="table-head"></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно для создания/редактирования заметки -->
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Новая заметка</h2>
+                <button id="close-modal" class="btn-close">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="note-title" class="input-field" placeholder="Заголовок заметки">
+                <textarea id="note-content" class="textarea-field" placeholder="Текст заметки..." rows="5"></textarea>
+                <div class="modal-options">
+                    <label class="option-label">Дата:</label>
+                    <input type="date" id="note-date" class="input-field date-field">
+                    <label class="option-label">Статус:</label>
+                    <select id="note-status" class="filter-select">
+                        <option value="todo">⏳ Ожидает</option>
+                        <option value="in-progress">🔄 В процессе</option>
+                        <option value="done">✅ Выполнено</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-note" class="btn-primary">Сохранить</button>
+                <button id="share-note" class="btn-secondary">📤 Поделиться</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/table.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
