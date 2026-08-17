@@ -30,7 +30,7 @@ class TableManager {
         });
 
         this.importBtn.addEventListener('click', () => {
-            this.importFromCSV();
+            this.importFromFile();
         });
 
         this.pasteBtn.addEventListener('click', () => {
@@ -223,32 +223,37 @@ class TableManager {
         }
     }
 
-    // Импорт из CSV или XLSX
-    importFromCSV() {
-        // Создаем скрытый input для выбора файла
+    // Импорт файла (CSV или XLSX)
+    importFromFile() {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
-        fileInput.accept = '.csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel';
+        fileInput.accept = '.csv,.xlsx,.xls,.numbers,.txt,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         fileInput.style.display = 'none';
         
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            
-            const fileName = file.name.toLowerCase();
-            
-            if (fileName.endsWith('.csv')) {
-                this.importCSVFile(file);
-            } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-                this.importXLSXFile(file);
-            } else {
-                alert('Неподдерживаемый формат файла. Используйте CSV или XLSX');
-            }
+            this.processFile(file);
         });
         
         document.body.appendChild(fileInput);
         fileInput.click();
         document.body.removeChild(fileInput);
+    }
+
+    // Обработка выбранного файла
+    processFile(file) {
+        const fileName = file.name.toLowerCase();
+        
+        if (fileName.endsWith('.csv') || fileName.endsWith('.txt')) {
+            this.importCSVFile(file);
+        } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+            this.importXLSXFile(file);
+        } else if (fileName.endsWith('.numbers')) {
+            alert('Файлы Numbers не поддерживаются. Экспортируйте таблицу в CSV или XLSX.');
+        } else {
+            alert('Неподдерживаемый формат файла. Используйте CSV, XLSX или XLS');
+        }
     }
 
     // Импорт CSV файла
@@ -293,7 +298,8 @@ class TableManager {
                 const workbook = XLSX.read(data, { type: 'array' });
                 
                 // Получаем первый лист
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const firstSheetName = workbook.SheetNames[0];
+                const firstSheet = workbook.Sheets[firstSheetName];
                 
                 // Конвертируем в JSON (массив массивов)
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
@@ -301,7 +307,7 @@ class TableManager {
                 if (jsonData && jsonData.length > 0) {
                     const columns = jsonData[0].map(col => String(col));
                     const rows = jsonData.slice(1).map(row => 
-                        row.map(cell => String(cell))
+                        columns.map((_, index) => String(row[index] !== undefined ? row[index] : ''))
                     );
                     
                     if (confirm(`Импортировать таблицу? (${rows.length} строк, ${columns.length} колонок)`)) {
