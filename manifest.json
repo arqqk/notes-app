@@ -2,21 +2,21 @@
   "name": "Мои заметки",
   "short_name": "Заметки",
   "description": "Приложение для заметок с календарем и таблицами",
-  "start_url": "/notes-app/",
-  "scope": "/notes-app/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/notes-app/icons/icon-192.png",
+      "src": "./icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/notes-app/icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
