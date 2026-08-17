@@ -14,10 +14,6 @@ class TableManager {
         this.addColBtn = document.getElementById('add-col-btn');
         this.exportBtn = document.getElementById('export-table');
         this.importBtn = document.getElementById('import-table');
-        this.zoomInBtn = document.getElementById('zoom-in-btn');
-        this.zoomOutBtn = document.getElementById('zoom-out-btn');
-        this.zoomResetBtn = document.getElementById('zoom-reset-btn');
-        this.zoomIndicator = document.getElementById('zoom-indicator');
         this.tableContainer = document.querySelector('.table-container');
     }
 
@@ -36,19 +32,6 @@ class TableManager {
 
         this.importBtn.addEventListener('click', () => {
             this.importFromFile();
-        });
-
-        // Масштабирование таблицы
-        this.zoomInBtn.addEventListener('click', () => {
-            this.changeZoom(0.2);
-        });
-
-        this.zoomOutBtn.addEventListener('click', () => {
-            this.changeZoom(-0.2);
-        });
-
-        this.zoomResetBtn.addEventListener('click', () => {
-            this.setZoom(1);
         });
 
         // Масштабирование жестами (pinch)
@@ -204,19 +187,10 @@ class TableManager {
         }
     }
 
-    // Изменить масштаб
-    changeZoom(delta) {
-        const newZoom = Math.min(3, Math.max(0.5, this.currentZoom + delta));
-        this.setZoom(newZoom);
-    }
-
     // Установить масштаб
     setZoom(zoom) {
         this.currentZoom = zoom;
         this.applyZoom();
-        if (this.zoomIndicator) {
-            this.zoomIndicator.textContent = `${Math.round(zoom * 100)}%`;
-        }
     }
 
     // Применить масштаб к таблице
