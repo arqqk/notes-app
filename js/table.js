@@ -271,6 +271,34 @@ class TableManager {
         document.body.removeChild(fileInput);
     }
 
+    // Вставка из буфера обмена
+    async pasteFromClipboard() {
+        try {
+            const text = await navigator.clipboard.readText();
+            
+            if (!text || text.trim() === '') {
+                alert('Буфер обмена пуст');
+                return;
+            }
+            
+            const tableData = this.parseCSV(text);
+            
+            if (tableData && tableData.columns.length > 0) {
+                if (confirm(`Импортировать таблицу из буфера? (${tableData.rows.length} строк, ${tableData.columns.length} колонок)`)) {
+                    this.tableData = tableData;
+                    storage.saveTable(this.tableData);
+                    this.renderTable();
+                    alert('Таблица успешно импортирована!');
+                }
+            } else {
+                alert('Не удалось распознать данные из буфера. Убедитесь, что данные разделены запятыми (CSV формат)');
+            }
+        } catch (error) {
+            console.error('Ошибка вставки:', error);
+            alert('Не удалось получить доступ к буферу обмена');
+        }
+    }
+
     // Парсинг CSV
     parseCSV(csvText) {
         const lines = csvText.split(/\r\n|\n|\r/).filter(line => line.trim());
