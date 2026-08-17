@@ -1,14 +1,16 @@
 const CACHE_NAME = 'notes-app-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/storage.js',
-  '/js/notes.js',
-  '/js/calendar.js',
-  '/js/table.js',
-  '/js/app.js',
-  '/manifest.json'
+  '/notes-app/',
+  '/notes-app/index.html',
+  '/notes-app/css/style.css',
+  '/notes-app/js/storage.js',
+  '/notes-app/js/notes.js',
+  '/notes-app/js/calendar.js',
+  '/notes-app/js/table.js',
+  '/notes-app/js/app.js',
+  '/notes-app/manifest.json',
+  '/notes-app/icons/icon-192.png',
+  '/notes-app/icons/icon-512.png'
 ];
 
 // Установка Service Worker
@@ -53,7 +55,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         // Если нет сети и нет в кеше
         if (event.request.url.indexOf('.html') > -1) {
-          return caches.match('/index.html');
+          return caches.match('/notes-app/index.html');
         }
       })
   );
