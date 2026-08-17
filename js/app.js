@@ -26,7 +26,7 @@ class App {
         });
 
         // Обработка свайпов для навигации
-        this.initializeSwipeNavigation();
+        // this.initializeSwipeNavigation();
 
         // Обработка клавиатурных сокращений
         this.initializeKeyboardShortcuts();
