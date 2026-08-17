@@ -1,16 +1,16 @@
-const CACHE_NAME = 'notes-app-v1';
+const CACHE_NAME = 'notes-app-v2';
 const urlsToCache = [
-  '/notes-app/',
-  '/notes-app/index.html',
-  '/notes-app/css/style.css',
-  '/notes-app/js/storage.js',
-  '/notes-app/js/notes.js',
-  '/notes-app/js/calendar.js',
-  '/notes-app/js/table.js',
-  '/notes-app/js/app.js',
-  '/notes-app/manifest.json',
-  '/notes-app/icons/icon-192.png',
-  '/notes-app/icons/icon-512.png'
+  './',
+  './index.html',
+  './css/style.css',
+  './js/storage.js',
+  './js/notes.js',
+  './js/calendar.js',
+  './js/table.js',
+  './js/app.js',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 // Установка Service Worker
@@ -22,6 +22,7 @@ self.addEventListener('install', event => {
         return cache.addAll(urlsToCache);
       })
   );
+  self.skipWaiting();
 });
 
 // Стратегия: cache first, потом network
@@ -29,20 +30,16 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Возвращаем из кеша, если есть
         if (response) {
           return response;
         }
         
-        // Иначе делаем запрос в сеть
         return fetch(event.request)
           .then(response => {
-            // Проверяем, что ответ валидный
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
             
-            // Клонируем ответ и сохраняем в кеш
             const responseToCache = response.clone();
             caches.open(CACHE_NAME)
               .then(cache => {
@@ -53,9 +50,8 @@ self.addEventListener('fetch', event => {
           });
       })
       .catch(() => {
-        // Если нет сети и нет в кеше
-        if (event.request.url.indexOf('.html') > -1) {
-          return caches.match('/notes-app/index.html');
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
         }
       })
   );
@@ -75,4 +71,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.clients.claim();
 });
