@@ -13,7 +13,6 @@ class TableManager {
         this.addColBtn = document.getElementById('add-col-btn');
         this.exportBtn = document.getElementById('export-table');
         this.importBtn = document.getElementById('import-table');
-        this.pasteBtn = document.getElementById('paste-table');
     }
 
     initializeEventListeners() {
@@ -33,10 +32,6 @@ class TableManager {
             this.importFromFile();
         });
 
-        this.pasteBtn.addEventListener('click', () => {
-            this.pasteFromClipboard();
-        });
-        
         // Делегирование событий для input в таблице
         this.tableBody.addEventListener('input', (e) => {
             if (e.target.classList.contains('cell-input')) {
@@ -331,33 +326,6 @@ class TableManager {
         };
         
         reader.readAsArrayBuffer(file);
-    }
-
-    // Вставка из буфера обмена
-    async pasteFromClipboard() {
-        try {
-            const text = await navigator.clipboard.readText();
-            
-            if (!text || text.trim() === '') {
-                alert('Буфер обмена пуст');
-                return;
-            }
-            
-            const tableData = this.parseCSV(text);
-            
-            if (tableData && tableData.columns.length > 0) {
-                if (confirm(`Импортировать таблицу из буфера? (${tableData.rows.length} строк, ${tableData.columns.length} колонок)`)) {
-                    this.tableData = tableData;
-                    storage.saveTable(this.tableData);
-                    this.renderTable();
-                }
-            } else {
-                alert('Не удалось распознать данные из буфера. Убедитесь, что данные разделены запятыми (CSV формат)');
-            }
-        } catch (error) {
-            console.error('Ошибка вставки:', error);
-            alert('Не удалось получить доступ к буферу обмена');
-        }
     }
 
     // Парсинг CSV
