@@ -2,6 +2,7 @@
 class TableManager {
     constructor() {
         this.tableData = storage.getTable();
+        this.currentZoom = 1;
         this.initializeElements();
         this.initializeEventListeners();
     }
@@ -13,6 +14,11 @@ class TableManager {
         this.addColBtn = document.getElementById('add-col-btn');
         this.exportBtn = document.getElementById('export-table');
         this.importBtn = document.getElementById('import-table');
+        this.zoomInBtn = document.getElementById('zoom-in-btn');
+        this.zoomOutBtn = document.getElementById('zoom-out-btn');
+        this.zoomResetBtn = document.getElementById('zoom-reset-btn');
+        this.zoomIndicator = document.getElementById('zoom-indicator');
+        this.tableContainer = document.querySelector('.table-container');
     }
 
     initializeEventListeners() {
@@ -32,6 +38,22 @@ class TableManager {
             this.importFromFile();
         });
 
+        // Масштабирование таблицы
+        this.zoomInBtn.addEventListener('click', () => {
+            this.changeZoom(0.2);
+        });
+
+        this.zoomOutBtn.addEventListener('click', () => {
+            this.changeZoom(-0.2);
+        });
+
+        this.zoomResetBtn.addEventListener('click', () => {
+            this.setZoom(1);
+        });
+
+        // Масштабирование жестами (pinch)
+        this.initializePinchZoom();
+        
         // Делегирование событий для input в таблице
         this.tableBody.addEventListener('input', (e) => {
             if (e.target.classList.contains('cell-input')) {
@@ -111,6 +133,9 @@ class TableManager {
                 </td>
             </tr>
         `).join('');
+        
+        // Применяем текущий масштаб
+        this.applyZoom();
     }
 
     // Добавить строку
@@ -177,6 +202,61 @@ class TableManager {
             this.tableData.columns[colIndex] = input.value;
             storage.saveTable(this.tableData);
         }
+    }
+
+    // Изменить масштаб
+    changeZoom(delta) {
+        const newZoom = Math.min(3, Math.max(0.5, this.currentZoom + delta));
+        this.setZoom(newZoom);
+    }
+
+    // Установить масштаб
+    setZoom(zoom) {
+        this.currentZoom = zoom;
+        this.applyZoom();
+        if (this.zoomIndicator) {
+            this.zoomIndicator.textContent = `${Math.round(zoom * 100)}%`;
+        }
+    }
+
+    // Применить масштаб к таблице
+    applyZoom() {
+        const table = document.querySelector('.editable-table');
+        if (table) {
+            table.style.transform = `scale(${this.currentZoom})`;
+            table.style.transformOrigin = 'top left';
+        }
+    }
+
+    // Инициализация pinch-zoom
+    initializePinchZoom() {
+        let initialDistance = 0;
+        let initialZoom = 1;
+        
+        this.tableContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = this.getDistance(e.touches[0], e.touches[1]);
+                initialZoom = this.currentZoom;
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        this.tableContainer.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const currentDistance = this.getDistance(e.touches[0], e.touches[1]);
+                const scale = currentDistance / initialDistance;
+                const newZoom = Math.min(3, Math.max(0.5, initialZoom * scale));
+                this.setZoom(newZoom);
+            }
+        }, { passive: false });
+    }
+
+    // Расстояние между двумя точками касания
+    getDistance(touch1, touch2) {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     // Экспорт в CSV
@@ -291,11 +371,9 @@ class TableManager {
                 const data = new Uint8Array(event.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 
-                // Получаем первый лист
                 const firstSheetName = workbook.SheetNames[0];
                 const firstSheet = workbook.Sheets[firstSheetName];
                 
-                // Конвертируем в JSON (массив массивов)
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
                 
                 if (jsonData && jsonData.length > 0) {
@@ -364,7 +442,6 @@ class TableManager {
         const columns = parseLine(lines[0]);
         const rows = lines.slice(1).map(line => parseLine(line));
         
-        // Проверяем, что все строки имеют одинаковое количество колонок
         const validRows = rows.filter(row => row.length === columns.length);
         
         return {
