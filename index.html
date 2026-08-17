@@ -93,14 +93,18 @@
                 <input type="text" id="note-title" class="input-field" placeholder="Заголовок заметки">
                 <textarea id="note-content" class="textarea-field" placeholder="Текст заметки..." rows="5"></textarea>
                 <div class="modal-options">
-                    <label class="option-label">Дата:</label>
-                    <input type="date" id="note-date" class="input-field date-field">
-                    <label class="option-label">Статус:</label>
-                    <select id="note-status" class="filter-select">
-                        <option value="todo">⏳ Ожидает</option>
-                        <option value="in-progress">🔄 В процессе</option>
-                        <option value="done">✅ Выполнено</option>
-                    </select>
+                    <div class="option-group">
+                        <label class="option-label">Дата:</label>
+                        <input type="date" id="note-date" class="input-field date-field">
+                    </div>
+                    <div class="option-group">
+                        <label class="option-label">Статус:</label>
+                        <select id="note-status" class="input-field filter-select">
+                            <option value="todo">⏳ Ожидает</option>
+                            <option value="in-progress">🔄 В процессе</option>
+                            <option value="done">✅ Выполнено</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
