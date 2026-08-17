@@ -223,52 +223,110 @@ class TableManager {
         }
     }
 
-    // Импорт из CSV
+    // Импорт из CSV или XLSX
     importFromCSV() {
         // Создаем скрытый input для выбора файла
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
-        fileInput.accept = '.csv,text/csv';
+        fileInput.accept = '.csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel';
         fileInput.style.display = 'none';
         
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
             
-            const reader = new FileReader();
+            const fileName = file.name.toLowerCase();
             
-            reader.onload = (event) => {
-                try {
-                    const csvText = event.target.result;
-                    const tableData = this.parseCSV(csvText);
-                    
-                    if (tableData && tableData.columns.length > 0) {
-                        // Спрашиваем пользователя
-                        if (confirm(`Импортировать таблицу? (${tableData.rows.length} строк, ${tableData.columns.length} колонок)`)) {
-                            this.tableData = tableData;
-                            storage.saveTable(this.tableData);
-                            this.renderTable();
-                            alert('Таблица успешно импортирована!');
-                        }
-                    } else {
-                        alert('Не удалось распознать данные в файле');
-                    }
-                } catch (error) {
-                    console.error('Ошибка импорта:', error);
-                    alert('Ошибка при импорте файла');
-                }
-            };
-            
-            reader.onerror = () => {
-                alert('Ошибка при чтении файла');
-            };
-            
-            reader.readAsText(file);
+            if (fileName.endsWith('.csv')) {
+                this.importCSVFile(file);
+            } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                this.importXLSXFile(file);
+            } else {
+                alert('Неподдерживаемый формат файла. Используйте CSV или XLSX');
+            }
         });
         
         document.body.appendChild(fileInput);
         fileInput.click();
         document.body.removeChild(fileInput);
+    }
+
+    // Импорт CSV файла
+    importCSVFile(file) {
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+            try {
+                const csvText = event.target.result;
+                const tableData = this.parseCSV(csvText);
+                
+                if (tableData && tableData.columns.length > 0) {
+                    if (confirm(`Импортировать таблицу? (${tableData.rows.length} строк, ${tableData.columns.length} колонок)`)) {
+                        this.tableData = tableData;
+                        storage.saveTable(this.tableData);
+                        this.renderTable();
+                        alert('Таблица успешно импортирована!');
+                    }
+                } else {
+                    alert('Не удалось распознать данные в файле');
+                }
+            } catch (error) {
+                console.error('Ошибка импорта CSV:', error);
+                alert('Ошибка при импорте файла');
+            }
+        };
+        
+        reader.onerror = () => {
+            alert('Ошибка при чтении файла');
+        };
+        
+        reader.readAsText(file);
+    }
+
+    // Импорт XLSX файла
+    importXLSXFile(file) {
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+            try {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Получаем первый лист
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                
+                // Конвертируем в JSON (массив массивов)
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+                
+                if (jsonData && jsonData.length > 0) {
+                    const columns = jsonData[0].map(col => String(col));
+                    const rows = jsonData.slice(1).map(row => 
+                        row.map(cell => String(cell))
+                    );
+                    
+                    if (confirm(`Импортировать таблицу? (${rows.length} строк, ${columns.length} колонок)`)) {
+                        this.tableData = {
+                            columns: columns,
+                            rows: rows
+                        };
+                        storage.saveTable(this.tableData);
+                        this.renderTable();
+                        alert('Таблица успешно импортирована!');
+                    }
+                } else {
+                    alert('Не удалось распознать данные в файле');
+                }
+            } catch (error) {
+                console.error('Ошибка импорта XLSX:', error);
+                alert('Ошибка при импорте XLSX файла. Убедитесь, что библиотека XLSX загружена.');
+            }
+        };
+        
+        reader.onerror = () => {
+            alert('Ошибка при чтении файла');
+        };
+        
+        reader.readAsArrayBuffer(file);
     }
 
     // Вставка из буфера обмена
