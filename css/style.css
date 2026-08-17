@@ -584,6 +584,58 @@ input[type="date"] {
     min-height: 46px;
 }
 
+/* Единые стили для всех полей в модальном окне */
+.option-group {
+    margin-bottom: 16px;
+}
+
+.option-group .option-label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.option-group .input-field,
+.option-group .filter-select,
+.modal-body .input-field,
+.modal-body .textarea-field,
+.modal-body select {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-color);
+    color: var(--text-color);
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+}
+
+/* Специально для поля даты */
+input[type="date"].date-field {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-color);
+    color: var(--text-color);
+    font-size: 16px;
+    display: block;
+    margin: 0;
+}
+
+/* Выравнивание текста даты */
+input[type="date"].date-field::-webkit-date-and-time-value {
+    text-align: left;
+}
+
 /* Тёмная тема по умолчанию */
 @media (prefers-color-scheme: light) {
     :root {
