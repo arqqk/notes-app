@@ -212,6 +212,8 @@ class TableManager {
         let initialZoom = 1;
         let initialMidpointX = 0;
         let initialMidpointY = 0;
+        let originX = 0;
+        let originY = 0;
         
         this.tableContainer.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
@@ -221,6 +223,14 @@ class TableManager {
                 // Вычисляем середину между двумя пальцами
                 initialMidpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                 initialMidpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                
+                // Получаем позицию таблицы
+                const table = document.querySelector('.editable-table');
+                const containerRect = this.tableContainer.getBoundingClientRect();
+                
+                // Вычисляем точку касания относительно таблицы (с учётом текущего масштаба)
+                originX = (initialMidpointX - containerRect.left + this.tableContainer.scrollLeft) / initialZoom;
+                originY = (initialMidpointY - containerRect.top + this.tableContainer.scrollTop) / initialZoom;
                 
                 e.preventDefault();
             }
@@ -234,22 +244,23 @@ class TableManager {
                 const scale = currentDistance / initialDistance;
                 const newZoom = Math.min(3, Math.max(0.5, initialZoom * scale));
                 
-                // Вычисляем текущую середину между пальцами
-                const currentMidpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                const currentMidpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-                
-                // Получаем позицию таблицы относительно контейнера
+                // Устанавливаем фиксированную точку трансформации
                 const table = document.querySelector('.editable-table');
-                const containerRect = this.tableContainer.getBoundingClientRect();
-                
-                // Вычисляем точку касания относительно таблицы
-                const originX = currentMidpointX - containerRect.left + this.tableContainer.scrollLeft;
-                const originY = currentMidpointY - containerRect.top + this.tableContainer.scrollTop;
+                table.style.transformOrigin = `${originX}px ${originY}px`;
+                table.style.transform = `scale(${newZoom})`;
                 
                 this.currentZoom = newZoom;
-                this.applyZoom(originX, originY);
             }
         }, { passive: false });
+        
+        // Сброс transform-origin после окончания жеста
+        this.tableContainer.addEventListener('touchend', () => {
+            const table = document.querySelector('.editable-table');
+            if (table) {
+                table.style.transformOrigin = '0 0';
+                table.style.transform = `scale(${this.currentZoom})`;
+            }
+        });
     }
 
     // Расстояние между двумя точками касания
