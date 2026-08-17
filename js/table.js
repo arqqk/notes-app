@@ -188,18 +188,15 @@ class TableManager {
     }
 
     // Установить масштаб
-    setZoom(zoom, originX = null, originY = null) {
+    setZoom(zoom) {
         this.currentZoom = zoom;
-        this.applyZoom(originX, originY);
+        this.applyZoom();
     }
 
     // Применить масштаб к таблице
-    applyZoom(originX = null, originY = null) {
+    applyZoom() {
         const table = document.querySelector('.editable-table');
         if (table) {
-            if (originX !== null && originY !== null) {
-                table.style.transformOrigin = `${originX}px ${originY}px`;
-            }
             table.style.transform = `scale(${this.currentZoom})`;
         }
     }
@@ -216,16 +213,21 @@ class TableManager {
                 initialDistance = this.getDistance(e.touches[0], e.touches[1]);
                 initialZoom = this.currentZoom;
                 
-                // Вычисляем середину между двумя пальцами
-                const midpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                const midpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                // Середина между пальцами
+                const startMidpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const startMidpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 
-                // Получаем позицию контейнера
-                const containerRect = this.tableContainer.getBoundingClientRect();
+                // Получаем позицию таблицы
+                const table = document.querySelector('.editable-table');
+                const tableRect = table.getBoundingClientRect();
                 
-                // Вычисляем точку касания относительно таблицы (с учётом текущего масштаба)
-                originX = (midpointX - containerRect.left + this.tableContainer.scrollLeft) / initialZoom;
-                originY = (midpointY - containerRect.top + this.tableContainer.scrollTop) / initialZoom;
+                // Точка касания относительно видимой области таблицы
+                const touchX = startMidpointX - tableRect.left;
+                const touchY = startMidpointY - tableRect.top;
+                
+                // Точка касания относительно несжатой таблицы
+                originX = touchX / initialZoom;
+                originY = touchY / initialZoom;
                 
                 e.preventDefault();
             }
@@ -239,8 +241,9 @@ class TableManager {
                 const scale = currentDistance / initialDistance;
                 const newZoom = Math.min(3, Math.max(0.5, initialZoom * scale));
                 
-                // Устанавливаем фиксированную точку трансформации
                 const table = document.querySelector('.editable-table');
+                
+                // Устанавливаем origin и scale
                 table.style.transformOrigin = `${originX}px ${originY}px`;
                 table.style.transform = `scale(${newZoom})`;
                 
