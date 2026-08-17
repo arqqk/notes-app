@@ -558,6 +558,32 @@ body {
     }
 }
 
+/* Исправление для iOS - выравнивание всех полей в модальном окне */
+.modal-options .input-field,
+.modal-options .filter-select {
+    width: 100%;
+    min-height: 46px;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+/* Единый стиль для всех input в модальном окне */
+.modal-body input,
+.modal-body textarea,
+.modal-body select {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 16px;
+}
+
+/* Убираем различие в высоте */
+input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 46px;
+}
+
 /* Тёмная тема по умолчанию */
 @media (prefers-color-scheme: light) {
     :root {
