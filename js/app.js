@@ -99,39 +99,39 @@ class App {
         if (tableManager) tableManager.renderTable();
     }
 
-    // Навигация свайпами
-    initializeSwipeNavigation() {
-        let touchStartX = 0;
-        let touchEndX = 0;
-        const swipeThreshold = 100;
+    // // Навигация свайпами
+    // initializeSwipeNavigation() {
+    //     let touchStartX = 0;
+    //     let touchEndX = 0;
+    //     const swipeThreshold = 100;
 
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
+    //     document.addEventListener('touchstart', (e) => {
+    //         touchStartX = e.changedTouches[0].screenX;
+    //     }, { passive: true });
 
-        document.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            this.handleSwipe(touchStartX, touchEndX, swipeThreshold);
-        }, { passive: true });
-    }
+    //     document.addEventListener('touchend', (e) => {
+    //         touchEndX = e.changedTouches[0].screenX;
+    //         this.handleSwipe(touchStartX, touchEndX, swipeThreshold);
+    //     }, { passive: true });
+    // }
 
-    // Обработка свайпа
-    handleSwipe(startX, endX, threshold) {
-        const deltaX = endX - startX;
+    // // Обработка свайпа
+    // handleSwipe(startX, endX, threshold) {
+    //     const deltaX = endX - startX;
         
-        if (Math.abs(deltaX) < threshold) return;
+    //     if (Math.abs(deltaX) < threshold) return;
 
-        const views = ['notes', 'calendar', 'table'];
-        const currentIndex = views.indexOf(this.currentView);
+    //     const views = ['notes', 'calendar', 'table'];
+    //     const currentIndex = views.indexOf(this.currentView);
         
-        if (deltaX < 0 && currentIndex < views.length - 1) {
-            // Свайп влево - следующая вкладка
-            this.switchView(views[currentIndex + 1]);
-        } else if (deltaX > 0 && currentIndex > 0) {
-            // Свайп вправо - предыдущая вкладка
-            this.switchView(views[currentIndex - 1]);
-        }
-    }
+    //     if (deltaX < 0 && currentIndex < views.length - 1) {
+    //         // Свайп влево - следующая вкладка
+    //         this.switchView(views[currentIndex + 1]);
+    //     } else if (deltaX > 0 && currentIndex > 0) {
+    //         // Свайп вправо - предыдущая вкладка
+    //         this.switchView(views[currentIndex - 1]);
+    //     }
+    // }
 
     // Клавиатурные сокращения
     initializeKeyboardShortcuts() {
