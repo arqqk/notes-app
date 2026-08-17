@@ -245,12 +245,26 @@ body {
     align-items: center;
     font-size: 14px;
     color: var(--text-secondary);
+    gap: 8px;
 }
 
 .note-status {
     padding: 4px 12px;
     border-radius: 15px;
     font-size: 14px;
+    min-height: 27px;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.note-footer select.filter-select {
+    padding: 4px 8px;
+    font-size: 14px;
+    min-height: 27px;
+    border-radius: 15px;
+    box-sizing: border-box;
 }
 
 .status-todo {
