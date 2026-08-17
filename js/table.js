@@ -270,7 +270,6 @@ class TableManager {
                         this.tableData = tableData;
                         storage.saveTable(this.tableData);
                         this.renderTable();
-                        alert('Таблица успешно импортирована!');
                     }
                 } else {
                     alert('Не удалось распознать данные в файле');
@@ -317,7 +316,6 @@ class TableManager {
                         };
                         storage.saveTable(this.tableData);
                         this.renderTable();
-                        alert('Таблица успешно импортирована!');
                     }
                 } else {
                     alert('Не удалось распознать данные в файле');
@@ -352,7 +350,6 @@ class TableManager {
                     this.tableData = tableData;
                     storage.saveTable(this.tableData);
                     this.renderTable();
-                    alert('Таблица успешно импортирована!');
                 }
             } else {
                 alert('Не удалось распознать данные из буфера. Убедитесь, что данные разделены запятыми (CSV формат)');
