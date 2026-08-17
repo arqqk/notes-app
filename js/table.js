@@ -199,8 +199,6 @@ class TableManager {
         if (table) {
             if (originX !== null && originY !== null) {
                 table.style.transformOrigin = `${originX}px ${originY}px`;
-            } else {
-                table.style.transformOrigin = '0 0';
             }
             table.style.transform = `scale(${this.currentZoom})`;
         }
@@ -210,8 +208,6 @@ class TableManager {
     initializePinchZoom() {
         let initialDistance = 0;
         let initialZoom = 1;
-        let initialMidpointX = 0;
-        let initialMidpointY = 0;
         let originX = 0;
         let originY = 0;
         
@@ -221,16 +217,15 @@ class TableManager {
                 initialZoom = this.currentZoom;
                 
                 // Вычисляем середину между двумя пальцами
-                initialMidpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                initialMidpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                const midpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const midpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 
-                // Получаем позицию таблицы
-                const table = document.querySelector('.editable-table');
+                // Получаем позицию контейнера
                 const containerRect = this.tableContainer.getBoundingClientRect();
                 
                 // Вычисляем точку касания относительно таблицы (с учётом текущего масштаба)
-                originX = (initialMidpointX - containerRect.left + this.tableContainer.scrollLeft) / initialZoom;
-                originY = (initialMidpointY - containerRect.top + this.tableContainer.scrollTop) / initialZoom;
+                originX = (midpointX - containerRect.left + this.tableContainer.scrollLeft) / initialZoom;
+                originY = (midpointY - containerRect.top + this.tableContainer.scrollTop) / initialZoom;
                 
                 e.preventDefault();
             }
@@ -252,15 +247,6 @@ class TableManager {
                 this.currentZoom = newZoom;
             }
         }, { passive: false });
-        
-        // Сброс transform-origin после окончания жеста
-        this.tableContainer.addEventListener('touchend', () => {
-            const table = document.querySelector('.editable-table');
-            if (table) {
-                table.style.transformOrigin = '0 0';
-                table.style.transform = `scale(${this.currentZoom})`;
-            }
-        });
     }
 
     // Расстояние между двумя точками касания
