@@ -188,17 +188,21 @@ class TableManager {
     }
 
     // Установить масштаб
-    setZoom(zoom) {
+    setZoom(zoom, originX = null, originY = null) {
         this.currentZoom = zoom;
-        this.applyZoom();
+        this.applyZoom(originX, originY);
     }
 
     // Применить масштаб к таблице
-    applyZoom() {
+    applyZoom(originX = null, originY = null) {
         const table = document.querySelector('.editable-table');
         if (table) {
+            if (originX !== null && originY !== null) {
+                table.style.transformOrigin = `${originX}px ${originY}px`;
+            } else {
+                table.style.transformOrigin = '0 0';
+            }
             table.style.transform = `scale(${this.currentZoom})`;
-            table.style.transformOrigin = 'top left';
         }
     }
 
@@ -206,11 +210,18 @@ class TableManager {
     initializePinchZoom() {
         let initialDistance = 0;
         let initialZoom = 1;
+        let initialMidpointX = 0;
+        let initialMidpointY = 0;
         
         this.tableContainer.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
                 initialDistance = this.getDistance(e.touches[0], e.touches[1]);
                 initialZoom = this.currentZoom;
+                
+                // Вычисляем середину между двумя пальцами
+                initialMidpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                initialMidpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                
                 e.preventDefault();
             }
         }, { passive: false });
@@ -218,10 +229,25 @@ class TableManager {
         this.tableContainer.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {
                 e.preventDefault();
+                
                 const currentDistance = this.getDistance(e.touches[0], e.touches[1]);
                 const scale = currentDistance / initialDistance;
                 const newZoom = Math.min(3, Math.max(0.5, initialZoom * scale));
-                this.setZoom(newZoom);
+                
+                // Вычисляем текущую середину между пальцами
+                const currentMidpointX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const currentMidpointY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                
+                // Получаем позицию таблицы относительно контейнера
+                const table = document.querySelector('.editable-table');
+                const containerRect = this.tableContainer.getBoundingClientRect();
+                
+                // Вычисляем точку касания относительно таблицы
+                const originX = currentMidpointX - containerRect.left + this.tableContainer.scrollLeft;
+                const originY = currentMidpointY - containerRect.top + this.tableContainer.scrollTop;
+                
+                this.currentZoom = newZoom;
+                this.applyZoom(originX, originY);
             }
         }, { passive: false });
     }
